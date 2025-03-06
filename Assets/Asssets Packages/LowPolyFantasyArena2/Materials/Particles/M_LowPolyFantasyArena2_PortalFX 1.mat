@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_LowPolyFantasyArena2_PortalFX
+  m_Name: M_LowPolyFantasyArena2_PortalFX 1
   m_Shader: {fileID: -6465566751694194690, guid: 5bf30848efa015b4f91b4dd06ad4b307, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -52,7 +52,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - Color_da8fc87eb56f4cd9912e2daa94a68802: {r: 0, g: 7.4642644, b: 5.4903536, a: 0}
+    - Color_da8fc87eb56f4cd9912e2daa94a68802: {r: 7.4642644, g: 0.014768466, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &9158568552131549705
