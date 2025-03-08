@@ -127,7 +127,7 @@ MonoBehaviour:
   states: 0
   animator: {fileID: 1976729074561147423}
   chaseSpeed: 1
-  startChaseDistance: 5
+  startChaseDistance: 2
   endChaseDistance: 1
   moveSpeed: 2
 --- !u!1 &6922917092138442435

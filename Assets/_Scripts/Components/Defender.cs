@@ -90,7 +90,8 @@ public class Defender : Character
         {
             transform.LookAt(_team.opponentGate.position, Vector3.up);
             animator.SetTrigger("Idle");
-            states = DefenderStates.None;
+            if (!Active)
+                states = DefenderStates.None;
         }
     }
 

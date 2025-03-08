@@ -31,4 +31,11 @@ public class Ball : Singleton<Ball>
         passing = true;
         Owner = attacker;
     }
+
+    public void Respawn(Vector3 position) 
+    {
+        Owner = null;
+        transform.position = position;
+        gameObject.SetActive(true);
+    }
 }

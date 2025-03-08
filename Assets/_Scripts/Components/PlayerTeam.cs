@@ -14,4 +14,6 @@ public class PlayerTeam : Team
         if (GameManager.Instance.States != GameStates.Active) return;
         SpawnCharacter(point);
     }
+
+    protected override void OnStartRound() { }
 }
