@@ -1,22 +1,16 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Team : MonoBehaviour
+public abstract class Team : MonoBehaviour
 {
     public int Points = 10;
 
     [SerializeField] private CharacterType characterType = CharacterType.None;
     [SerializeField] private List<Character> characters = new List<Character>();
-    public Transform enemyGate = null;
-    private void OnEnable()
-    {
-        PlayerInput.PlayerClicksOnField -= OnPlayerClicksOnField;
-        PlayerInput.PlayerClicksOnField += OnPlayerClicksOnField;
-    }
-    private void OnDisable() => PlayerInput.PlayerClicksOnField -= OnPlayerClicksOnField;
+    public Transform opponentGate = null;
+    public Color color = Color.white;
 
-    private void OnPlayerClicksOnField(Vector3 point)
+    protected void SpawnCharacter(Vector3 point)
     {
         Character character = PoolingManager.Instance.GetCharacter(characterType);
         if (Points < character.Points)
@@ -28,5 +22,10 @@ public class Team : MonoBehaviour
         Points -= character.Points;
         character.Activate(this, point);
         characters.Add(character);
+    }
+
+    public Character GetNextCharacter(Character character) 
+    {
+        return characters.Find(c => c != character && c.Active);
     }
 }

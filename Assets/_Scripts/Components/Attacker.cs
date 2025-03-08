@@ -1,27 +1,40 @@
-using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Attacker : Character
 {
     [SerializeField] private AttackerStates states = AttackerStates.None;
 
+    [Header("References")]
+    public Transform ballPosition = null;
+    [SerializeField] private Animator animator = null;
+
     [Header("Chase")]
     [SerializeField] private float chaseSpeed = 1.5f;
     [SerializeField] private float chaseDistance = 1f;
-    public Transform ballPosition = null;
+
+    [Header("Attack")]
+    [SerializeField] private float attackSpeed = 0.75f;
+    [SerializeField] private float attackDistance = 1.5f;
+
+    private Vector3 positioningPoint = Vector3.zero;
 
     public override int Points { get => 2; }
     protected override float TimeToActivate { get => 0.5f; }
-    protected override float TimeToReactivate { get => throw new System.NotImplementedException(); }
+    protected override float TimeToReactivate { get => 2.5f; }
     protected override CharacterType Type => CharacterType.Attacker;
-
+    protected override void onEnable() => transform.LookAt(Ball.Instance.transform, Vector3.up);
     protected override void OnActivate()
     {
-        states = AttackerStates.Spawning;
+        ResetAnimator();
+        animator.SetTrigger("Run");
+        states = AttackerStates.Chase;
     }
 
     private void Update()
     {
+        if (GameManager.Instance.States != GameStates.Active) return;
+
         switch (states)
         {
             case AttackerStates.None:
@@ -41,27 +54,28 @@ public class Attacker : Character
             case AttackerStates.Pass:
                 Pass();
                 break;
-            case AttackerStates.Inactive:
-                Inactive();
+            case AttackerStates.Standby:
+                Standby();
                 break;
         }
     }
 
-    private void Spawning()
-    {
-        states = AttackerStates.Chase;
-    }
+    private void Spawning() => states = AttackerStates.Chase;
 
     private void Chase()
     {
         if (Ball.Instance.Owner != null) 
         {
+            Vector3 dir = (transform.position - _team.opponentGate.position).normalized;
+            dir.x *= Random.Range(8, 15);
+            dir.y = 0;
+            dir.z *= Random.Range(-8, 8);
+            positioningPoint = _team.opponentGate.position + dir;
             states = AttackerStates.Positioning;
             return;
         }
 
-        transform.LookAt(Ball.Instance.transform, Vector3.up);
-        transform.position += transform.forward * chaseSpeed * Time.deltaTime;
+        Move(Ball.Instance.transform.position, chaseSpeed);
 
         if (Vector3.Distance(transform.position, Ball.Instance.transform.position) <= chaseDistance) 
         {
@@ -72,26 +86,83 @@ public class Attacker : Character
 
     private void Attacking()
     {
-        
+        Move(_team.opponentGate.position, attackSpeed);
+
+        if (Vector3.Distance(transform.position, _team.opponentGate.position) <= attackDistance) 
+        {
+            states = AttackerStates.None;
+            GameManager.Instance.FinishTheRound(_team);
+            Ball.Instance.gameObject.SetActive(false);
+        }
     }
 
     private void Positioning()
     {
-        
+        Move(positioningPoint, chaseSpeed);
+        if (Vector3.Distance(transform.position, positioningPoint) <= 1) 
+        {
+            animator.SetTrigger("Idle");
+            transform.LookAt(_team.opponentGate, Vector3.up);
+            states = AttackerStates.Standby;
+        }
     }
 
     private void Pass()
     {
-        throw new NotImplementedException();
+        Attacker _ = _team.GetNextCharacter(this) as Attacker;
+
+        if (_ is null)
+        {
+            GameManager.Instance.FinishTheRound(_team, false);
+        }
+
+        Ball.Instance.Pass(_);
+        animator.SetTrigger("Idle");
+        states = AttackerStates.None;
     }
 
-    private void Inactive()
+    private void Standby()
     {
-        throw new NotImplementedException();
+        if (Ball.Instance.Owner == this) 
+        {
+            animator.SetTrigger("Run");
+            states = AttackerStates.Attacking;
+        }
+
+        if (Ball.Instance.Owner == null) 
+        {
+            animator.SetTrigger("Run");
+            states = AttackerStates.Chase;
+        }
     }
 
     protected override void OnInactivate()
     {
-        
+        animator.SetTrigger("Throw");
+        states = AttackerStates.Pass;
+    }
+
+    protected override void OnFinishRound(bool win)
+    {
+        ResetAnimator();
+        animator.SetTrigger(win ? "Cheer" : "Die");
+        Debug.Log("End" + win);
+        states = AttackerStates.None;
+    }
+
+    protected override void ReActivate()
+    {
+        ResetAnimator();
+        animator.SetTrigger("Idle");
+        states = AttackerStates.Standby;
+    }
+
+    private void ResetAnimator() 
+    {
+        animator.ResetTrigger("Run");
+        animator.ResetTrigger("Spawn");
+        animator.ResetTrigger("Cheer");
+        animator.ResetTrigger("Idle");
+        animator.ResetTrigger("Throw");
     }
 }

@@ -4,9 +4,13 @@ using NUnit.Framework;
 
 public class PoolingManager : Singleton<PoolingManager>
 {
-    [SerializeField] private Character Attacker = null;
+    [SerializeField] private Character attacker = null;
+    [SerializeField] private Character defender = null;
+
+    [Space]
 
     [SerializeField] protected List<Character> attackers = new List<Character>();
+    [SerializeField] protected List<Character> defenders = new List<Character>();
 
     public Character GetCharacter(CharacterType type)
     {
@@ -19,11 +23,18 @@ public class PoolingManager : Singleton<PoolingManager>
 
                 if (_ is null)
                 {
-                    _ = Instantiate(Attacker);
+                    _ = Instantiate(attacker);
                     attackers.Add(_);
                 }
                 break;
             case CharacterType.Defender:
+                _ = defenders.Find(c => c.IsClear);
+
+                if (_ is null)
+                {
+                    _ = Instantiate(defender);
+                    defenders.Add(_);
+                }
                 break;
         }
 
