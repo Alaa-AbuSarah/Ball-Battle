@@ -6,8 +6,8 @@ public class SceneLoader : MonoBehaviour
 {
     [SerializeField] private GameObject mask = null;
 
-    public void LoadGame(string sceneName) => StartCoroutine(LoadScene(sceneName));
-    private IEnumerator LoadScene(string sceneName)
+    public void LoadScene(string sceneName) => StartCoroutine(LoadSceneAsync(sceneName));
+    private IEnumerator LoadSceneAsync(string sceneName)
     {
         mask.SetActive(true);
 

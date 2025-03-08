@@ -16,6 +16,16 @@ public class EndGamePanel : MonoBehaviour
     [Space]
 
     [SerializeField] private List<Image> icons = new List<Image>(5);
+    [SerializeField] private GameObject mazeButton = null;
+
+    [Space]
+
+    [SerializeField] private List<GameObject> roundUI = new List<GameObject>();
+    [SerializeField] private List<GameObject> mazeUI = new List<GameObject>();
+
+    [Space]
+
+    [SerializeField] private GameObject mazeAttacker = null;
 
     private int playerPoints = 0;
     private int enemyPoints = 0;
@@ -28,7 +38,9 @@ public class EndGamePanel : MonoBehaviour
         for (int i = 0; i < icons.Count; i++)
         {
             team = GameManager.Instance.rounds[i].Winer;
-            if (team.teamName == "Player")
+            if(team is null)
+                icons[i].sprite = drawIcon;
+            else if (team.teamName == "Player")
             {
                 icons[i].sprite = winIcon;
                 playerPoints++;
@@ -38,12 +50,23 @@ public class EndGamePanel : MonoBehaviour
                 icons[i].sprite = loseIcon;
                 enemyPoints++;
             }
-            else
-                icons[i].sprite = drawIcon;
         }
 
         if (playerPoints > enemyPoints) text.text = "Win";
         else if (enemyPoints > playerPoints) text.text = "Lose";
-        else text.text = "DRAW";
+        else 
+        {
+            text.text = "DRAW";
+            mazeButton.SetActive(true);
+        }
+    }
+
+    public void PlayMaze() 
+    {
+        roundUI.ForEach(u => u.gameObject.SetActive(false));
+        mazeUI.ForEach(u => u.gameObject.SetActive(true));
+
+        mazeAttacker.SetActive(true);
+        gameObject.SetActive(false);
     }
 }

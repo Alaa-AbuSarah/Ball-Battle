@@ -24,17 +24,14 @@ public class GameManager : Singleton<GameManager>
 
     private int roundIndex = 0;
 
-    private void Start()
-    {
-        StartCoroutine(StartRound());
-    }
+    private void Start() => StartCoroutine(StartRound());
     public void FinishTheRound(Team team, bool win = true)
     {
         States = GameStates.End;
         RoundTimer.Instance.Stop();
         Team winer = win ? team : Other(team);
         if (team == null) winer = null;
-        FinishRound((winer is null) ? draw : winer);
+        FinishRound?.Invoke((winer is null) ? draw : winer);
         rounds[roundIndex].Winer = winer;
         roundIndex++;
 
@@ -51,8 +48,12 @@ public class GameManager : Singleton<GameManager>
 
         if (roundIndex < rounds.Count)
             StartCoroutine(StartRound(true));
-        else
+        else 
+        {
+            player.ClearCharacter();
+            enemy.ClearCharacter();
             endGamePanel.SetActive(true);
+        }
     }
 
     private Team Other(Team team) 
