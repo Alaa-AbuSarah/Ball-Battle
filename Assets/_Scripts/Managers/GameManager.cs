@@ -14,11 +14,13 @@ public class GameManager : Singleton<GameManager>
     [Header("References")]
     [SerializeField] private Team player = null;
     [SerializeField] private Team enemy = null;
+    [SerializeField] private Team draw = null;
     [SerializeField] private TMP_Text text = null;
+    [SerializeField] private GameObject endGamePanel = null;
 
     [Space]
 
-    [SerializeField] private List<Round> rounds = new List<Round>(5);
+    public List<Round> rounds = new List<Round>(5);
 
     private int roundIndex = 0;
 
@@ -31,7 +33,8 @@ public class GameManager : Singleton<GameManager>
         States = GameStates.End;
         RoundTimer.Instance.Stop();
         Team winer = win ? team : Other(team);
-        FinishRound(winer);
+        if (team == null) winer = null;
+        FinishRound((winer is null) ? draw : winer);
         rounds[roundIndex].Winer = winer;
         roundIndex++;
 
@@ -40,10 +43,16 @@ public class GameManager : Singleton<GameManager>
         text.text = (winer == player) ? "Win" : "Lose";
         text.color = (winer == player) ? Color.green : Color.red;
 
+        if (winer is null) 
+        {
+            text.text = "DRAW";
+            text.color = Color.black;
+        }
+
         if (roundIndex < rounds.Count)
             StartCoroutine(StartRound(true));
         else
-            text.text = "End";
+            endGamePanel.SetActive(true);
     }
 
     private Team Other(Team team) 
@@ -78,21 +87,15 @@ public class GameManager : Singleton<GameManager>
         text.text = "Gooo!";
         yield return wait;
         text.gameObject.SetActive(false);
-
-        Team attacker = (enemy.characterType == CharacterType.Attacker) ? enemy : player;
-        Ball.Instance.Respawn(attacker.transform.position + new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)));
-
+        
         States = GameStates.Active;
 
         RoundTimer.Instance.StartTimer(140);
 
         player.StartRound();
         enemy.StartRound();
-    }
 
-    public void Timeout() 
-    {
         Team attacker = (enemy.characterType == CharacterType.Attacker) ? enemy : player;
-        FinishTheRound(attacker, false);
+        Ball.Instance.Respawn(attacker.transform.position + new Vector3(Random.Range(-2, 2), 0, Random.Range(-2, 2)));
     }
 }

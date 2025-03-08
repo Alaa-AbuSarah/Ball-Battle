@@ -29,6 +29,6 @@ public class RoundTimer : Singleton<RoundTimer>
         }
 
         if (GameManager.Instance.States == GameStates.Active)
-            GameManager.Instance.Timeout();
+            GameManager.Instance.FinishTheRound(null);
     }
 }

@@ -5,7 +5,7 @@ public abstract class Team : MonoBehaviour
 {
     public int Points { get => energyBar.Value; set => energyBar.Value = value; }
 
-    [SerializeField] private string teamName = "Team";
+    public string teamName = "Team";
     public CharacterType characterType = CharacterType.None;
     [SerializeField] private List<Character> characters = new List<Character>();
     public Transform opponentGate = null;
@@ -31,6 +31,7 @@ public abstract class Team : MonoBehaviour
     public Character GetNextCharacter(Character character) 
     {
         Character _ = characters.Find(c => c != character && c.Active);
+        if (_ is null) return null;
         float dis = Vector3.Distance(character.transform.position, _.transform.position);
         foreach (Character c in characters)
         {
