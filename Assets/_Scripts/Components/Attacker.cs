@@ -146,7 +146,6 @@ public class Attacker : Character
     {
         ResetAnimator();
         animator.SetTrigger(win ? "Cheer" : "Die");
-        Debug.Log("End" + win);
         states = AttackerStates.None;
     }
 
@@ -164,5 +163,6 @@ public class Attacker : Character
         animator.ResetTrigger("Cheer");
         animator.ResetTrigger("Idle");
         animator.ResetTrigger("Throw");
+        animator.ResetTrigger("Die");
     }
 }

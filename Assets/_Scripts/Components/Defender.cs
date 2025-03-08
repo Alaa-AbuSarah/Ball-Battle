@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class Defender : Character
@@ -23,16 +22,12 @@ public class Defender : Character
     protected override float TimeToReactivate => 4;
     protected override CharacterType Type => CharacterType.Defender;
 
-    private void Start()
-    {
-        transform.LookAt(Ball.Instance.transform, Vector3.up);
-        animator.SetTrigger("Spawn");
-    }
+    protected override void onEnable() => transform.LookAt(Ball.Instance.transform, Vector3.up);
 
     protected override void OnActivate()
     {
-        states = DefenderStates.Spawning;
         startPosition = transform.position;
+        states = DefenderStates.Standby;
     }
 
     private void Update()
@@ -43,27 +38,16 @@ public class Defender : Character
         {
             case DefenderStates.None:
                 break;
-            case DefenderStates.Spawning:
-                Spawning();
-                break;
             case DefenderStates.Standby:
                 Standby();
                 break;
             case DefenderStates.Chase:
                 Chase();
                 break;
-            case DefenderStates.Inactive:
-                Inactive();
-                break;
             case DefenderStates.Move:
                 Move();
                 break;
         }
-    }
-
-    private void Spawning()
-    {
-        states = DefenderStates.Standby;
     }
 
     private void Standby()
@@ -80,10 +64,9 @@ public class Defender : Character
 
     private void Chase()
     {
-
         Move(target.transform.position, chaseSpeed);
 
-        if (!target.Active) 
+        if (!target.Active)
         {
             states = DefenderStates.Move;
             target = null;
@@ -94,38 +77,31 @@ public class Defender : Character
         {
             target.Inactivate();
             target = null;
-            animator.SetTrigger("Run");
             states = DefenderStates.Move;
             Inactivate();
         }
     }
 
-    private void Inactive()
-    {
-
-    }
-
     private void Move()
     {
-
         Move(startPosition, moveSpeed);
+
         if (Vector3.Distance(transform.position, startPosition) <= 0.1f)
         {
             transform.LookAt(_team.opponentGate.position, Vector3.up);
             animator.SetTrigger("Idle");
-            states = DefenderStates.Inactive;
+            states = DefenderStates.None;
         }
     }
 
     protected override void OnFinishRound(bool win)
     {
+        ResetAnimator();
+        animator.SetTrigger(win ? "Cheer" : "Die");
         states = DefenderStates.None;
     }
 
-    protected override void OnInactivate()
-    {
-
-    }
+    protected override void OnInactivate() { }
 
     private void OnDrawGizmos()
     {
@@ -136,5 +112,14 @@ public class Defender : Character
     protected override void ReActivate()
     {
         states = DefenderStates.Standby;
+    }
+
+    private void ResetAnimator()
+    {
+        animator.ResetTrigger("Spawn");
+        animator.ResetTrigger("Run");
+        animator.ResetTrigger("Idle");
+        animator.ResetTrigger("Cheer");
+        animator.ResetTrigger("Die");
     }
 }

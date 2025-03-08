@@ -7924,7 +7924,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 126dba198bdeca64c89dad69cdff5cab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Points: 30
+  Points: 3
   characterType: 2
   characters: []
   opponentGate: {fileID: 1096035073}
