@@ -17,6 +17,13 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private Team draw = null;
     [SerializeField] private TMP_Text text = null;
     [SerializeField] private GameObject endGamePanel = null;
+    [SerializeField] private Shaker cameraShaker = null;
+
+    [Header("SFX")]
+    [SerializeField] private AudioClip startRoundClip = null;
+    [SerializeField] private AudioClip winRoundClip = null;
+    [SerializeField] private AudioClip loseRoundClip = null;
+    [SerializeField] private AudioClip drawRoundClip = null;
 
     [Space]
 
@@ -27,6 +34,7 @@ public class GameManager : Singleton<GameManager>
     private void Start() => StartCoroutine(StartRound());
     public void FinishTheRound(Team team, bool win = true)
     {
+        if (cameraShaker != null) cameraShaker.Shake();
         States = GameStates.End;
         RoundTimer.Instance.Stop();
         Team winer = win ? team : Other(team);
@@ -37,13 +45,24 @@ public class GameManager : Singleton<GameManager>
 
         text.gameObject.SetActive(true);
 
-        text.text = (winer == player) ? "Win" : "Lose";
-        text.color = (winer == player) ? Color.green : Color.red;
+        if (winer == player)
+        {
+            text.text = "Win";
+            text.color = Color.green;
+            AudioManager.Instance?.PlaySFX(winRoundClip, 0.75f);
+        }
+        else if (win == enemy)
+        {
+            text.text = "Lose";
+            text.color = Color.red;
+            AudioManager.Instance?.PlaySFX(loseRoundClip, 0.75f);
 
-        if (winer is null) 
+        }
+        else if (winer is null)
         {
             text.text = "DRAW";
             text.color = Color.black;
+            AudioManager.Instance?.PlaySFX(drawRoundClip, 0.75f);
         }
 
         if (roundIndex < rounds.Count)
@@ -78,13 +97,17 @@ public class GameManager : Singleton<GameManager>
         text.gameObject.SetActive(true);
         text.text = "3";
         text.color = Color.red;
+        AudioManager.Instance?.PlayClick();
         yield return wait;
         text.text = "2";
+        AudioManager.Instance?.PlayClick();
         text.color = Color.yellow;
         yield return wait;
         text.text = "1";
+        AudioManager.Instance?.PlayClick();
         text.color = Color.green;
         yield return wait;
+        AudioManager.Instance?.PlaySFX(startRoundClip);
         text.text = "Gooo!";
         yield return wait;
         text.gameObject.SetActive(false);

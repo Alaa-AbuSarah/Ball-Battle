@@ -53,6 +53,7 @@ MonoBehaviour:
   states: 0
   ballPosition: {fileID: 1763752955911725523}
   animator: {fileID: 7051307942677788375}
+  startClip: {fileID: 8300000, guid: e0aa1dea0af123c459ed94fada9ce05c, type: 3}
   chaseSpeed: 1.5
   chaseDistance: 1
   attackSpeed: 0.75

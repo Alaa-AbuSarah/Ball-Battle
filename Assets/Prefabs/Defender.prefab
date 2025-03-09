@@ -126,6 +126,8 @@ MonoBehaviour:
   IsClear: 1
   states: 0
   animator: {fileID: 1976729074561147423}
+  startClip: {fileID: 8300000, guid: aee793579f88cf84e97e9b07273934ec, type: 3}
+  catchClip: {fileID: 8300000, guid: be77013b9ad3aa347878eebe60ee63f2, type: 3}
   chaseSpeed: 1
   startChaseDistance: 2
   endChaseDistance: 1

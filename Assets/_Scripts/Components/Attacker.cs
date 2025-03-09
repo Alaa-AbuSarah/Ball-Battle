@@ -8,6 +8,7 @@ public class Attacker : Character
     [Header("References")]
     public Transform ballPosition = null;
     [SerializeField] private Animator animator = null;
+    [SerializeField] private AudioClip startClip = null;
 
     [Header("Chase")]
     [SerializeField] private float chaseSpeed = 1.5f;
@@ -29,6 +30,7 @@ public class Attacker : Character
         ResetAnimator();
         animator.SetTrigger("Run");
         states = AttackerStates.Chase;
+        AudioManager.Instance?.PlaySFX(startClip);
     }
 
     private void Update()
@@ -81,6 +83,7 @@ public class Attacker : Character
         {
             Ball.Instance.Take(this);
             states = AttackerStates.Attacking;
+            AudioManager.Instance?.PlayClick();
         }
     }
 
@@ -127,6 +130,7 @@ public class Attacker : Character
         {
             animator.SetTrigger("Run");
             states = AttackerStates.Attacking;
+            AudioManager.Instance?.PlayClick();
         }
 
         if (Ball.Instance.Owner == null) 

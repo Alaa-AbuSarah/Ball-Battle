@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class MazeAttacker : MonoBehaviour
 {
     [SerializeField] private float time = 60f;
@@ -90,6 +90,7 @@ public class MazeAttacker : MonoBehaviour
         {
             agent.SetDestination(gate.position);
             states = MazeAttackerStates.Attack;
+            AudioManager.Instance?.PlayClick();
         }
     }
 }

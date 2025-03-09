@@ -6,6 +6,8 @@ public class Defender : Character
 
     [Header("References")]
     [SerializeField] private Animator animator = null;
+    [SerializeField] private AudioClip startClip = null;
+    [SerializeField] private AudioClip catchClip = null;
 
     [Header("Chase")]
     [SerializeField] private float chaseSpeed = 1f;
@@ -28,6 +30,7 @@ public class Defender : Character
     {
         startPosition = transform.position;
         states = DefenderStates.Standby;
+        AudioManager.Instance?.PlaySFX(startClip);
     }
 
     private void Update()
@@ -78,6 +81,7 @@ public class Defender : Character
             target.Inactivate();
             target = null;
             states = DefenderStates.Move;
+            AudioManager.Instance?.PlaySFX(catchClip);
             Inactivate();
         }
     }
