@@ -13,6 +13,7 @@ public class EnergyBar : MonoBehaviour
     [SerializeField] private TMP_Text text = null;
     [SerializeField] private Slider slider = null;
     [SerializeField] private float regenerationTime = 0.5f;
+    [SerializeField] private GameObject filled = null;
 
     public void Activate()
     {
@@ -29,8 +30,15 @@ public class EnergyBar : MonoBehaviour
         while (GameManager.Instance.States == GameStates.Active)
         {
             yield return wait;
+
             if (Value < 6)
+            {
                 Value++;
+                filled.SetActive(false);
+            }
+            else
+                filled.SetActive(!filled.activeSelf);
+
             slider.value = Value;
         }
     }

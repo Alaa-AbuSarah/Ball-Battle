@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -17,6 +18,7 @@ public class Attacker : Character
     [Header("Attack")]
     [SerializeField] private float attackSpeed = 0.75f;
     [SerializeField] private float attackDistance = 1.5f;
+    [SerializeField] private GameObject highlight = null;
 
     private Vector3 positioningPoint = Vector3.zero;
 
@@ -82,6 +84,7 @@ public class Attacker : Character
         if (Vector3.Distance(transform.position, Ball.Instance.transform.position) <= chaseDistance) 
         {
             Ball.Instance.Take(this);
+            highlight.SetActive(true);
             states = AttackerStates.Attacking;
             AudioManager.Instance?.PlayClick();
         }
@@ -94,6 +97,7 @@ public class Attacker : Character
         if (Vector3.Distance(transform.position, _team.opponentGate.position) <= attackDistance) 
         {
             states = AttackerStates.None;
+            highlight.SetActive(false);
             GameManager.Instance.FinishTheRound(_team);
             Ball.Instance.gameObject.SetActive(false);
         }
@@ -129,6 +133,7 @@ public class Attacker : Character
         if (Ball.Instance.Owner == this) 
         {
             animator.SetTrigger("Run");
+            highlight.SetActive(true);
             states = AttackerStates.Attacking;
             AudioManager.Instance?.PlayClick();
         }
@@ -143,6 +148,7 @@ public class Attacker : Character
     protected override void OnInactivate()
     {
         animator.SetTrigger("Throw");
+        highlight.SetActive(false);
         states = AttackerStates.Pass;
     }
 

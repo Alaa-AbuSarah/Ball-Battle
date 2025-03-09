@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public abstract class Character : MonoBehaviour
@@ -8,6 +9,13 @@ public abstract class Character : MonoBehaviour
     protected Team _team = null;
     public bool Active = false;
     [SerializeField] private Image image = null;
+
+    [Space]
+
+    [SerializeField] private UnityEvent onSpawn = null;
+    [SerializeField] private UnityEvent onActivate = null;
+    [SerializeField] private UnityEvent onInactivate = null;
+    [SerializeField] private UnityEvent onReActivate = null;
 
     public abstract int Points { get; }
     protected abstract float TimeToActivate { get; }
@@ -29,6 +37,7 @@ public abstract class Character : MonoBehaviour
     private void OnDisable() => GameManager.FinishRound -= FinishRound;
     public virtual void Activate(Team team, Vector3 position)
     {
+        onSpawn?.Invoke();
         gameObject.SetActive(true);
         IsClear = false;
         Active = true;
@@ -41,6 +50,7 @@ public abstract class Character : MonoBehaviour
     private IEnumerator ActivateWait() 
     {
         yield return new WaitForSeconds(TimeToActivate);
+        onActivate?.Invoke();
         OnActivate();
     }
     protected abstract void OnActivate();
@@ -48,6 +58,7 @@ public abstract class Character : MonoBehaviour
     public virtual void Inactivate()
     {
         Active = false;
+        onInactivate?.Invoke();
         OnInactivate();
         timer = 0;
         StartCoroutine(InactivateWait());
@@ -63,8 +74,11 @@ public abstract class Character : MonoBehaviour
         }
 
         Active = true;
-        if (GameManager.Instance.States == GameStates.Active)
+        if (GameManager.Instance.States == GameStates.Active) 
+        {
+            onReActivate?.Invoke();
             ReActivate();
+        }
     }
     protected abstract void OnInactivate();
 

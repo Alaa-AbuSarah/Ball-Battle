@@ -13,6 +13,7 @@ public class Defender : Character
     [SerializeField] private float chaseSpeed = 1f;
     [SerializeField] private float startChaseDistance = 2f;
     [SerializeField] private float endChaseDistance = 1f;
+    [SerializeField] private SpriteRenderer chaseRenderer = null;
 
     [Header("Move")]
     [SerializeField] private float moveSpeed = 2f;
@@ -24,11 +25,22 @@ public class Defender : Character
     protected override float TimeToReactivate => 4;
     protected override CharacterType Type => CharacterType.Defender;
 
-    protected override void onEnable() => transform.LookAt(Ball.Instance.transform, Vector3.up);
+    protected override void onEnable()
+    {
+        transform.LookAt(Ball.Instance.transform, Vector3.up);
+    }
 
     protected override void OnActivate()
     {
         startPosition = transform.position;
+
+        chaseRenderer.transform.localScale = Vector3.one * endChaseDistance * 3.5f;
+        Color color = chaseRenderer.color;
+        color = _team.color;
+        color.a = 0.25f;
+        chaseRenderer.color = color;
+        chaseRenderer.gameObject.SetActive(true);
+
         states = DefenderStates.Standby;
         AudioManager.Instance?.PlaySFX(startClip);
     }
@@ -71,6 +83,7 @@ public class Defender : Character
 
         if (!target.Active)
         {
+            chaseRenderer.gameObject.SetActive(false);
             states = DefenderStates.Move;
             target = null;
             return;
@@ -78,10 +91,12 @@ public class Defender : Character
 
         if (Vector3.Distance(transform.position, target.transform.position) <= endChaseDistance)
         {
+            chaseRenderer.gameObject.SetActive(false);
             target.Inactivate();
             target = null;
             states = DefenderStates.Move;
             AudioManager.Instance?.PlaySFX(catchClip);
+            animator.SetTrigger("Catch");
             Inactivate();
         }
     }
@@ -116,6 +131,7 @@ public class Defender : Character
 
     protected override void ReActivate()
     {
+        chaseRenderer.gameObject.SetActive(true);
         states = DefenderStates.Standby;
     }
 
@@ -126,5 +142,14 @@ public class Defender : Character
         animator.ResetTrigger("Idle");
         animator.ResetTrigger("Cheer");
         animator.ResetTrigger("Die");
+    }
+
+    private void UpdateChaseRenderer() 
+    {
+        chaseRenderer.transform.localScale = Vector3.one * endChaseDistance * 2;
+        Color color = chaseRenderer.color;
+        color = _team.color;
+        color.a = 1.5f;
+        chaseRenderer.color = color;
     }
 }
